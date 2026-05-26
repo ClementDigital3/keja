@@ -55,7 +55,7 @@ export default function Home({ setPage, savedIds, toggleSave, setSelectedListing
             <span style={{ color: C.amber, fontStyle: "italic" }}>Keja</span> in Kenya
           </h1>
           <p style={{ fontSize: 16, color: "rgba(255,253,249,0.7)", marginBottom: 40, maxWidth: 460, margin: "0 auto 40px" }}>
-            Thousands of verified houses, apartments, and studios — scammer-free, every listing guaranteed.
+            Thousands of verified houses, apartments, and studios scammer-free, every listing guaranteed.
           </p>
 
           {/* Search */}
@@ -85,7 +85,7 @@ export default function Home({ setPage, savedIds, toggleSave, setSelectedListing
 
           {/* Stats */}
           <div style={{ display: "flex", justifyContent: "center", gap: 48, marginTop: 52, flexWrap: "wrap" }}>
-            {[["2,400+", "Active Listings"], ["180+", "Verified Agents"], ["47", "Nairobi Areas"], ["100%", "Scammer-Free"]].map(([n, l]) => (
+            {[["2,400+", "Active Listings"], ["180+", "Verified Agents"], ["47", "Kenya counties"], ["100%", "Scammer-Free"]].map(([n, l]) => (
               <div key={l} style={{ textAlign: "center" }}>
                 <div style={{ fontFamily: font.display, fontSize: 28, fontWeight: 700, color: C.amber }}>{n}</div>
                 <div style={{ fontSize: 12, color: "rgba(255,253,249,0.6)", marginTop: 2 }}>{l}</div>
@@ -102,7 +102,7 @@ export default function Home({ setPage, savedIds, toggleSave, setSelectedListing
         display: "flex", alignItems: "center", justifyContent: "center", gap: 32,
         flexWrap: "wrap",
       }}>
-        {[["🪪", "ID-Verified Users"], ["🔒", "KSh 10K Stake per Landlord"], ["🤖", "AI Fraud Detection"], ["⚖️", "DCI-Reportable Scams"]].map(([ic, txt]) => (
+        {[["🪪", "ID-Verified Landlords"], ["🔒", "KSh 2k per Landlord"], ["🤖", "Free Registration for tenants"], ["⚖️", "Reportable Scams"]].map(([ic, txt]) => (
           <div key={txt} style={{ display: "flex", alignItems: "center", gap: 8, color: "rgba(255,253,249,0.8)", fontSize: 13 }}>
             <span style={{ fontSize: 18 }}>{ic}</span> {txt}
           </div>
