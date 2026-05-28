@@ -1,9 +1,10 @@
 import { useState } from 'react'
+import { isTenantSubscribed } from '../storage'
 import { C, font, btn } from '../styles'
 import { AMENITY_ICONS } from '../data'
 import { StarRating, AmenityBadge } from '../components/PropertyCard'
 
-export default function Detail({ listing: l, setPage, saved, toggleSave }) {
+export default function Detail({ listing: l, setPage, saved, toggleSave, currentUser, setCurrentUser, fromPage = 'listings' }) {
   const [name, setName] = useState("")
   const [phone, setPhone] = useState("")
   const [msg, setMsg] = useState("")
@@ -21,7 +22,7 @@ export default function Detail({ listing: l, setPage, saved, toggleSave }) {
   return (
     <div style={{ maxWidth: 980, margin: "0 auto", padding: "36px 24px 80px" }}>
       <button style={{ ...btn.ghost, marginBottom: 24, display: "inline-flex", alignItems: "center", gap: 6 }}
-        onClick={() => setPage("listings")}>
+        onClick={() => setPage('listings')}>
         ← Back to listings
       </button>
 
@@ -121,48 +122,75 @@ export default function Detail({ listing: l, setPage, saved, toggleSave }) {
               per month &nbsp;·&nbsp; {l.available ? "✅ Available now" : "❌ Currently unavailable"}
             </div>
 
-            {!sent ? (
-              <>
-                <input style={inputStyle} placeholder="Your full name" value={name} onChange={e => setName(e.target.value)} />
-                <input style={inputStyle} placeholder="Phone number (07xx...)" value={phone} onChange={e => setPhone(e.target.value)} />
-                <textarea
-                  style={{ ...inputStyle, height: 84, resize: "vertical" }}
-                  placeholder="Message to landlord (optional)"
-                  value={msg} onChange={e => setMsg(e.target.value)}
-                />
-                <button
-                  style={{
-                    ...btn.primary, width: "100%", padding: 15, fontSize: 15, borderRadius: 12,
-                    background: l.available ? C.terracotta : "#bbb",
-                    cursor: l.available ? "pointer" : "not-allowed",
-                  }}
-                  onClick={() => name && phone && setSent(true)}
-                  disabled={!l.available}
-                >
-                  {l.available ? "📩 Request Viewing" : "Property Unavailable"}
-                </button>
-                <button style={{ ...btn.outline, width: "100%", padding: 13, fontSize: 14, borderRadius: 12, marginTop: 10 }}>
-                  💬 Chat with Agent
-                </button>
-              </>
-            ) : (
-              <div style={{ textAlign: "center", padding: "24px 0" }}>
-                <div style={{ fontSize: 46, marginBottom: 12 }}>✅</div>
-                <div style={{ fontFamily: font.display, fontSize: 18, fontWeight: 700, marginBottom: 6 }}>Request Sent!</div>
-                <div style={{ fontSize: 14, color: C.textSub, lineHeight: 1.7 }}>
-                  The agent will contact you within 24 hours at the number you provided.
-                </div>
+            {/* ── Not logged in ── */}
+            {!currentUser && (
+              <div style={{ textAlign: "center", padding: "8px 0 16px" }}>
+                <div style={{ fontSize: 36, marginBottom: 10 }}>🔒</div>
+                <div style={{ fontFamily: font.display, fontSize: 16, fontWeight: 700, marginBottom: 8 }}>Sign in to contact this landlord</div>
+                <div style={{ fontSize: 13, color: C.textSub, marginBottom: 18, lineHeight: 1.7 }}>Create a free account to start browsing and contacting landlords.</div>
+                <button style={{ ...btn.primary, width: "100%", padding: 13, fontSize: 14, borderRadius: 12, marginBottom: 8 }} onClick={() => setPage("signup")}>Register Free →</button>
+                <button style={{ ...btn.ghost, width: "100%", padding: 11, fontSize: 13 }} onClick={() => setPage("login")}>Sign in</button>
               </div>
+            )}
+
+            {/* ── Tenant not subscribed ── */}
+            {currentUser?.role === "tenant" && !isTenantSubscribed(currentUser) && (
+              <div style={{ textAlign: "center", padding: "8px 0 16px" }}>
+                <div style={{ fontSize: 36, marginBottom: 10 }}>🔓</div>
+                <div style={{ fontFamily: font.display, fontSize: 16, fontWeight: 700, marginBottom: 8 }}>Activate your account to contact this landlord</div>
+                <div style={{ fontSize: 13, color: C.textSub, marginBottom: 18, lineHeight: 1.7 }}>
+                  Pay KSh 500 once and contact unlimited landlords for 12 months. No hidden charges.
+                </div>
+                <div style={{ background: "#FFF4E0", border: "1px solid #FAC775", borderRadius: 10, padding: "12px 14px", marginBottom: 16, fontSize: 13, color: "#633806", lineHeight: 1.7 }}>
+                  💡 One payment · Unlimited contacts · 12 months
+                </div>
+                <button
+                  style={{ ...btn.primary, width: "100%", padding: 13, fontSize: 15, borderRadius: 12 }}
+                  onClick={() => setPage("tenant-dashboard")}
+                >
+                  Pay KSh 500 to Unlock →
+                </button>
+              </div>
+            )}
+
+            {/* ── Landlord viewing ── */}
+            {currentUser?.role === "landlord" && (
+              <div style={{ textAlign: "center", padding: "8px 0 16px" }}>
+                <div style={{ fontSize: 36, marginBottom: 10 }}>🏢</div>
+                <div style={{ fontSize: 14, color: C.textSub, lineHeight: 1.7 }}>You are viewing this as a landlord. Switch to a tenant account to contact this property.</div>
+              </div>
+            )}
+
+            {/* ── Subscribed tenant ── */}
+            {currentUser?.role === "tenant" && isTenantSubscribed(currentUser) && (
+              <>
+                {!sent ? (
+                  <>
+                    <input style={inputStyle} placeholder="Your full name" value={name} onChange={e => setName(e.target.value)} />
+                    <input style={inputStyle} placeholder="Phone number (07xx...)" value={phone} onChange={e => setPhone(e.target.value)} />
+                    <textarea style={{ ...inputStyle, height: 84, resize: "vertical" }} placeholder="Message to landlord (optional)" value={msg} onChange={e => setMsg(e.target.value)} />
+                    <button
+                      style={{ ...btn.primary, width: "100%", padding: 15, fontSize: 15, borderRadius: 12, background: l.available ? C.terracotta : "#bbb", cursor: l.available ? "pointer" : "not-allowed" }}
+                      onClick={() => name && phone && setSent(true)}
+                      disabled={!l.available}
+                    >
+                      {l.available ? "📩 Request Viewing" : "Property Unavailable"}
+                    </button>
+                    <button style={{ ...btn.outline, width: "100%", padding: 13, fontSize: 14, borderRadius: 12, marginTop: 10 }}>💬 Chat with Agent</button>
+                  </>
+                ) : (
+                  <div style={{ textAlign: "center", padding: "24px 0" }}>
+                    <div style={{ fontSize: 46, marginBottom: 12 }}>✅</div>
+                    <div style={{ fontFamily: font.display, fontSize: 18, fontWeight: 700, marginBottom: 6 }}>Request Sent!</div>
+                    <div style={{ fontSize: 14, color: C.textSub, lineHeight: 1.7 }}>The landlord will contact you within 24 hours.</div>
+                  </div>
+                )}
+              </>
             )}
 
             {/* Agent */}
             <div style={{ marginTop: 22, paddingTop: 20, borderTop: `1px solid ${C.border}`, display: "flex", alignItems: "center", gap: 12 }}>
-              <div style={{
-                width: 44, height: 44, borderRadius: "50%",
-                background: "#2D6A4F", color: "#fff",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 16, fontWeight: 700, flexShrink: 0,
-              }}>JM</div>
+              <div style={{ width: 44, height: 44, borderRadius: "50%", background: "#2D6A4F", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 700, flexShrink: 0 }}>JM</div>
               <div style={{ flex: 1 }}>
                 <div style={{ fontWeight: 700, fontSize: 14 }}>James Mwangi</div>
                 <div style={{ fontSize: 12, color: C.textMuted }}>Verified Agent · ⭐ 4.9</div>

@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { C, font, btn } from '../styles'
-import { LISTINGS, LOCATIONS, TYPES } from '../data'
+import { LOCATIONS, TYPES } from '../data'
 import PropertyCard from '../components/PropertyCard'
 
-export default function Listings({ savedIds, toggleSave, setSelectedListing, setPage, initialSearch }) {
+export default function Listings({ savedIds, toggleSave, setSelectedListing, setPage, initialSearch, listings = [], currentUser }) {
   const [search, setSearch] = useState(initialSearch || "")
   const [location, setLocation] = useState("All Locations")
   const [type, setType] = useState("All Types")
@@ -13,7 +13,7 @@ export default function Listings({ savedIds, toggleSave, setSelectedListing, set
   const [sort, setSort] = useState("rating")
   const [showFilters, setShowFilters] = useState(true)
 
-  const filtered = LISTINGS
+  const filtered = listings
     .filter(l => {
       const q = search.toLowerCase()
       return (
@@ -40,6 +40,18 @@ export default function Listings({ savedIds, toggleSave, setSelectedListing, set
 
   return (
     <div style={{ maxWidth: 1140, margin: "0 auto", padding: "36px 24px 80px" }}>
+      {currentUser && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: C.textMuted, marginBottom: 20 }}>
+          <span
+            onClick={() => setPage(currentUser.role === 'landlord' ? 'dashboard' : 'tenant-dashboard')}
+            style={{ color: C.terracotta, cursor: 'pointer', fontWeight: 600 }}
+          >
+            My Dashboard
+          </span>
+          <span>›</span>
+          <span style={{ color: C.dark, fontWeight: 500 }}>Listings</span>
+        </div>
+      )}
       <h1 style={{ fontFamily: font.display, fontSize: 28, fontWeight: 700, marginBottom: 4 }}>
         Find a House in Kenya
       </h1>
