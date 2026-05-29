@@ -144,12 +144,12 @@ export default function App() {
         <div>Kenya's trusted, scammer-free house rental platform.</div>
         <div style={{ marginTop: 8, display: 'flex', justifyContent: 'center', gap: 20, flexWrap: 'wrap' }}>
           <span style={{ cursor: 'pointer' }} onClick={() => setPage('trust')}>Trust & Safety</span>
-          <span>·</span><span>hello@keja.ke</span>
-          <span>·</span><span>+254 700 000 000</span>
-          <span>·</span><span>Nairobi, Kenya</span>
+          <span>·</span><span>keja@tech.ke</span>
+          <span>·</span><span>+254 74619 5839</span>
+          <span>·</span><span>Eldoret, Kenya</span>
         </div>
         <div style={{ marginTop: 14, color: 'rgba(255,255,255,0.3)', fontSize: 12 }}>
-          © 2025 Keja Technologies Ltd. · Built in Kenya 🇰🇪
+          © 2026 Keja Technologies Ltd. · Built in Kenya 🇰🇪
         </div>
       </footer>
     </div>
