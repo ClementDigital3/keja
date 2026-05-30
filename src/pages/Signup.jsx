@@ -133,7 +133,7 @@ export default function Signup({ setPage, setCurrentUser }) {
               <p style={{ fontSize: 14, color: C.textSub, marginBottom: 24 }}>Choose your account type.</p>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 24 }}>
                 {[
-                  { r: 'tenant',   icon: '🏠', title: 'Tenant',   desc: "I'm looking for a place to rent", fee: 'Free to register', note: 'KSh 500 paid on-site after viewing' },
+                  { r: 'tenant',   icon: '🏠', title: 'Tenant',   desc: "I'm looking for a place to rent", fee: 'Free to register', note: 'Pay KSh 500/yr to contact landlords' },
                   { r: 'landlord', icon: '🏢', title: 'Landlord', desc: 'I want to list my property',       fee: 'KSh 2,000 / year', note: 'Paid via M-Pesa during sign-up' },
                 ].map(({ r, icon, title, desc, fee, note }) => (
                   <div key={r} onClick={() => { setRole(r); setError('') }}

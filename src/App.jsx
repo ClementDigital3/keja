@@ -25,9 +25,11 @@ export default function App() {
   const [currentUser, setCurrentUser]         = useState(() => getSession())
   const [allListings, setAllListings]         = useState(() => {
     const stored = getSavedListings()
-    return stored.length > 0
-      ? [...stored, ...LISTINGS.filter(l => !stored.find(s => s.id === l.id))]
-      : LISTINGS
+    if (!stored.length) return LISTINGS
+    // Base listings always come from fresh data.js (so phone numbers etc stay current)
+    // Only append listings added by landlords (they have timestamp-based ids > 9)
+    const landlordAdded = stored.filter(l => !LISTINGS.find(b => b.id === l.id))
+    return [...LISTINGS, ...landlordAdded]
   })
 
   const toggleSave = (id) =>
@@ -144,12 +146,12 @@ export default function App() {
         <div>Kenya's trusted, scammer-free house rental platform.</div>
         <div style={{ marginTop: 8, display: 'flex', justifyContent: 'center', gap: 20, flexWrap: 'wrap' }}>
           <span style={{ cursor: 'pointer' }} onClick={() => setPage('trust')}>Trust & Safety</span>
-          <span>·</span><span>keja@tech.ke</span>
-          <span>·</span><span>+254 74619 5839</span>
-          <span>·</span><span>Eldoret, Kenya</span>
+          <span>·</span><span>hello@keja.ke</span>
+          <span>·</span><span>+254 700 000 000</span>
+          <span>·</span><span>Nairobi, Kenya</span>
         </div>
         <div style={{ marginTop: 14, color: 'rgba(255,255,255,0.3)', fontSize: 12 }}>
-          © 2026 Keja Technologies Ltd. · Built in Kenya 🇰🇪
+          © 2025 Keja Technologies Ltd. · Built in Kenya 🇰🇪
         </div>
       </footer>
     </div>

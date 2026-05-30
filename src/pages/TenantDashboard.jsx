@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { C, font, btn } from '../styles'
-import { isTenantSubscribed, activateTenantSubscription } from '../storage'
+import { isTenantSubscribed } from '../storage'
+import PaymentModal from '../components/PaymentModal'
 import PropertyCard from '../components/PropertyCard'
 
 const PERKS = [
@@ -152,7 +153,7 @@ export default function TenantDashboard({ currentUser, setCurrentUser, setPage, 
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
             <h2 style={{ fontFamily: font.display, fontSize: 20, fontWeight: 700 }}>Saved Properties</h2>
             <button style={{ ...btn.ghost, padding: '8px 16px', fontSize: 13 }} onClick={() => setPage('listings')}>
-              Browse more →
+              Browse Listings →
             </button>
           </div>
 
