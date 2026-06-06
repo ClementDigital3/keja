@@ -11,16 +11,16 @@ const HOW_IT_WORKS_TENANT = [
     desc: 'Every landlord on Keja has paid a registration fee and created a verified account. No anonymous listings.',
   },
   {
-    step: '03', icon: '📞', title: 'Contact the landlord directly',
-    desc: 'Message or call the landlord through Keja. Agree on a time to view the property in person.',
+    step: '03', icon: '💳', title: 'Pay KSh 500 to unlock contact',
+    desc: 'Pay a small KSh 500 fee via M-Pesa to unlock direct phone numbers, WhatsApp links, and physical addresses.',
   },
   {
-    step: '04', icon: '🏠', title: 'View the property on site',
-    desc: 'Meet the landlord physically, inspect the property, confirm everything is as listed.',
+    step: '04', icon: '📞', title: 'Contact the landlord directly',
+    desc: 'Call or WhatsApp the landlord directly to ask questions, verify details, and schedule a physical viewing.',
   },
   {
-    step: '05', icon: '💵', title: 'Pay KSh 500 on site — only if satisfied',
-    desc: 'After your viewing, pay the small KSh 500 platform fee directly to the landlord in person. You never pay anything online before seeing the house.',
+    step: '05', icon: '🏠', title: 'Find your house & move in',
+    desc: 'Once you successfully find a house and complete the viewing, your search access expires automatically. No recurring charges.',
   },
 ]
 
@@ -49,8 +49,8 @@ const HOW_IT_WORKS_LANDLORD = [
 
 const FAQS = [
   {
-    q: 'Why do tenants not pay online?',
-    a: 'Because online payment before seeing a property is exactly how rental scams work. On Keja, tenants pay nothing until they have physically stood inside the property and met the landlord face to face. This makes online fraud structurally impossible.',
+    q: 'Why do tenants pay KSh 500?',
+    a: 'The KSh 500 fee unlocks direct landlord contact details (phone, WhatsApp, and full address) for 30 days or until you find a house. This platform fee filters out spam, pays for KYC identity verification, and ensures only serious tenants can contact landlords.',
   },
   {
     q: 'What does the KSh 2,000 landlord fee do?',
@@ -62,15 +62,15 @@ const FAQS = [
   },
   {
     q: 'Is registration free for tenants?',
-    a: 'Yes. Tenants register completely free. The only fee a tenant ever pays is KSh 500 in person after a successful viewing — and only if they are happy with what they saw.',
+    a: 'Yes, registration and browsing properties is 100% free. You only pay the KSh 500 fee when you are ready to start contacting landlords.',
   },
   {
-    q: 'What does KSh 500 cover for the tenant?',
-    a: 'It covers the cost of the viewing arrangement and platform access. It is paid physically, in person, directly to the landlord after the viewing. Think of it as a small, fair fee for the landlord\'s time and the platform\'s service.',
+    q: 'How long does the KSh 500 access last?',
+    a: 'It lasts for exactly 30 days (1 month) or until you successfully find a house, whichever comes first. When you find a house, you can mark it as found on your dashboard, which concludes your search session.',
   },
   {
-    q: 'Can I get a refund if the property doesn\'t match the listing?',
-    a: 'Since you pay nothing online, there is nothing to refund. If a property looks different from its listing, simply don\'t proceed and report the listing. The landlord\'s account will be reviewed.',
+    q: 'Are there any other fees?',
+    a: 'No. Keja does not charge any other fees to tenants, and we strictly forbid landlords from demanding booking fees or deposits online. You only pay your rent and security deposit directly to the landlord in person after signing a lease.',
   },
 ]
 
@@ -126,8 +126,8 @@ export default function Trust({ setPage }) {
           {[
             ['🏢', 'Landlords pay to list', 'Skin in the game — not anonymous'],
             ['👤', 'Tenants register free', 'Verified identity, zero upfront cost'],
-            ['💵', 'KSh 500 paid on site', 'Only after you\'ve seen the property'],
-            ['🚫', 'Zero online payments', 'Nothing to steal, nothing to fake'],
+            ['💵', 'KSh 500 to contact', 'Unlock contact for 1 month or until house found'],
+            ['🚫', 'Zero deposit scams', 'No upfront booking fees to landlords'],
           ].map(([icon, title, sub]) => (
             <div key={title}>
               <div style={{ fontSize: 24, marginBottom: 4 }}>{icon}</div>
@@ -221,9 +221,9 @@ export default function Trust({ setPage }) {
               points: [
                 'Create your account at no cost',
                 'Browse all listings immediately',
-                'Contact any landlord directly',
-                'Pay KSh 500 in person after viewing',
-                'Never pay anything online',
+                'Pay KSh 500 to unlock communication',
+                '30 days access to all contact details',
+                'Expires early once you find a house',
               ],
             },
             {

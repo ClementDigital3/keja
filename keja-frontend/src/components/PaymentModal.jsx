@@ -40,8 +40,9 @@ export default function PaymentModal({ currentUser, setCurrentUser, onClose, onS
       zIndex: 1000, padding: 24,
     }}>
       <div style={{
-        background: C.white, borderRadius: 20, padding: 36,
+        background: C.white, borderRadius: 20, padding: 24,
         maxWidth: 460, width: '100%',
+        maxHeight: '90vh', overflowY: 'auto',
         boxShadow: '0 24px 64px rgba(0,0,0,0.35)',
         animation: 'slideUp .25s ease',
       }}>
@@ -49,60 +50,62 @@ export default function PaymentModal({ currentUser, setCurrentUser, onClose, onS
         {!done ? (
           <>
             {/* Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
               <div>
-                <div style={{ fontSize: 32, marginBottom: 8 }}>🔓</div>
-                <h2 style={{ fontFamily: font.display, fontSize: 22, fontWeight: 700, marginBottom: 4 }}>
+                <div style={{ fontSize: 28, marginBottom: 4 }}>🔓</div>
+                <h2 style={{ fontFamily: font.display, fontSize: 20, fontWeight: 700, marginBottom: 2 }}>
                   Unlock Landlord Contact
                 </h2>
-                <p style={{ fontSize: 13, color: C.textSub, lineHeight: 1.6 }}>
-                  Pay once, contact any landlord for 12 months.
+                <p style={{ fontSize: 12.5, color: C.textSub, lineHeight: 1.5 }}>
+                  Pay once, contact landlords for 30 days (expires early when you find a house).
                 </p>
               </div>
-              <button onClick={onClose} style={{ background: 'none', border: 'none', fontSize: 20, cursor: 'pointer', color: '#bbb', flexShrink: 0, marginLeft: 12 }}>✕</button>
+              <button onClick={onClose} style={{ background: 'none', border: 'none', fontSize: 18, cursor: 'pointer', color: '#bbb', flexShrink: 0, marginLeft: 12 }}>✕</button>
             </div>
 
             {/* What they unlock */}
-            <div style={{ background: '#F5F0E8', borderRadius: 12, padding: '14px 16px', marginBottom: 22 }}>
+            <div style={{
+              background: '#F5F0E8', borderRadius: 12, padding: '12px 14px', marginBottom: 14,
+              display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px 12px'
+            }}>
               {[
-                ['💬', 'Contact unlimited landlords for 12 months'],
-                ['📞', 'View direct phone numbers'],
-                ['📍', 'See full property address'],
-                ['🏆', 'Verified tenant badge on your profile'],
+                ['💬', 'Unlimited contact (30d)'],
+                ['📞', 'Direct phone numbers'],
+                ['📍', 'Full property address'],
+                ['🏆', 'Verified tenant badge'],
               ].map(([ic, txt]) => (
-                <div key={txt} style={{ display: 'flex', gap: 10, alignItems: 'center', fontSize: 13, color: '#444', marginBottom: 8 }}>
+                <div key={txt} style={{ display: 'flex', gap: 8, alignItems: 'center', fontSize: 12, color: '#444' }}>
                   <span>{ic}</span><span>{txt}</span>
                 </div>
               ))}
             </div>
 
-            {/* Price */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#EAF3DE', border: '1px solid #97C459', borderRadius: 10, padding: '12px 16px', marginBottom: 22 }}>
-              <span style={{ fontSize: 14, color: '#27500A', fontWeight: 600 }}>Annual subscription</span>
-              <span style={{ fontFamily: font.display, fontSize: 22, fontWeight: 700, color: '#1A5C35' }}>KSh 500</span>
-            </div>
-
-            {/* M-Pesa instructions */}
-            <div style={{ background: '#F0FAF5', border: '1.5px solid #7BCCA0', borderRadius: 12, padding: '16px 18px', marginBottom: 18 }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: '#1A5C35', marginBottom: 10 }}>📱 Pay via M-Pesa Paybill</div>
-              {[['Business No', '522533'], ['Account No', 'KEJA500'], ['Amount', 'KSh 500']].map(([k, v]) => (
-                <div key={k} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid #B7DDA0', fontSize: 13 }}>
-                  <span style={{ color: '#3B7A50' }}>{k}</span>
-                  <strong style={{ color: '#1A5C35' }}>{v}</strong>
+            {/* Price & M-Pesa Instructions */}
+            <div style={{ display: 'flex', gap: 10, marginBottom: 14 }}>
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', background: '#EAF3DE', border: '1px solid #97C459', borderRadius: 10, padding: '8px 12px', textAlign: 'center' }}>
+                <span style={{ fontSize: 11, color: '#27500A', fontWeight: 600 }}>Subscription</span>
+                <span style={{ fontFamily: font.display, fontSize: 18, fontWeight: 700, color: '#1A5C35' }}>KSh 500</span>
+              </div>
+              
+              <div style={{ flex: 2, background: '#F0FAF5', border: '1.5px solid #7BCCA0', borderRadius: 10, padding: '8px 12px' }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: '#1A5C35', marginBottom: 4 }}>📱 M-Pesa Paybill</div>
+                <div style={{ fontSize: 11.5, color: '#3B7A50', lineHeight: 1.4 }}>
+                  Business No: <strong>522533</strong><br />
+                  Account No: <strong>KEJA500</strong>
                 </div>
-              ))}
+              </div>
             </div>
 
             {/* STK push */}
             <button
               onClick={() => setMpesaSent(true)}
               style={{
-                width: '100%', padding: '11px', fontSize: 13, borderRadius: 10,
+                width: '100%', padding: '9px', fontSize: 12.5, borderRadius: 10,
                 fontFamily: font.body, fontWeight: 600, cursor: 'pointer',
                 border: `1.5px solid ${mpesaSent ? '#97C459' : C.terracotta}`,
                 background: mpesaSent ? '#EAF3DE' : 'transparent',
                 color: mpesaSent ? '#27500A' : C.terracotta,
-                marginBottom: 14,
+                marginBottom: 12,
               }}
             >
               {mpesaSent
@@ -111,25 +114,22 @@ export default function PaymentModal({ currentUser, setCurrentUser, onClose, onS
             </button>
 
             {/* Code input */}
-            <div style={{ marginBottom: 6 }}>
-              <label style={{ fontSize: 13, fontWeight: 600, color: '#444', display: 'block', marginBottom: 6 }}>
+            <div style={{ marginBottom: 12 }}>
+              <label style={{ fontSize: 12.5, fontWeight: 600, color: '#444', display: 'block', marginBottom: 4 }}>
                 M-Pesa Confirmation Code <span style={{ color: C.terracotta }}>*</span>
               </label>
               <input
-                style={inp}
+                style={{ ...inp, padding: '10px 12px', borderRadius: 8 }}
                 placeholder="e.g. RG7KL1MXYZ"
                 value={mpesaCode}
                 onChange={e => { setMpesaCode(e.target.value.toUpperCase()); setError('') }}
                 maxLength={12}
                 onKeyDown={e => e.key === 'Enter' && handleActivate()}
               />
-              <p style={{ fontSize: 12, color: C.textMuted, marginTop: 5 }}>
-                Found in the SMS M-Pesa sends after payment.
-              </p>
             </div>
 
             {error && (
-              <div style={{ background: '#FCEBEB', border: '1px solid #F09595', borderRadius: 8, padding: '10px 14px', fontSize: 13, color: '#7A1F1F', marginBottom: 14 }}>
+              <div style={{ background: '#FCEBEB', border: '1px solid #F09595', borderRadius: 8, padding: '8px 12px', fontSize: 12, color: '#7A1F1F', marginBottom: 12 }}>
                 ⚠️ {error}
               </div>
             )}
@@ -138,13 +138,13 @@ export default function PaymentModal({ currentUser, setCurrentUser, onClose, onS
               onClick={handleActivate}
               disabled={loading}
               style={{
-                ...btn.primary, width: '100%', padding: 14, fontSize: 15,
-                borderRadius: 12, marginTop: 6,
+                ...btn.primary, width: '100%', padding: 12, fontSize: 14,
+                borderRadius: 10,
                 opacity: loading ? 0.75 : 1,
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
               }}
             >
-              {loading ? <><Spinner /> Verifying payment...</> : '🔓 Activate My Account — KSh 500'}
+              {loading ? <><Spinner /> Verifying...</> : '🔓 Activate Account — KSh 500'}
             </button>
           </>
         ) : (
@@ -155,10 +155,10 @@ export default function PaymentModal({ currentUser, setCurrentUser, onClose, onS
               Account Activated!
             </h2>
             <p style={{ fontSize: 14, color: C.textSub, lineHeight: 1.8, marginBottom: 24 }}>
-              You can now contact this landlord and any other landlord on Keja for the next 12 months.
+              You can now contact this landlord and any other landlord on Keja for the next 30 days (expires early when you find a house).
             </p>
             <div style={{ background: '#EAF3DE', border: '1px solid #97C459', borderRadius: 12, padding: '14px 18px', fontSize: 13, color: '#27500A', lineHeight: 1.8, textAlign: 'left' }}>
-              ✅ KSh 500 paid · 12 months access<br />
+              ✅ KSh 500 paid · 30 days access (or until house found)<br />
               💬 Contact unlimited landlords<br />
               🏆 Verified tenant badge active
             </div>

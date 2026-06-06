@@ -145,7 +145,7 @@ export default function Detail({ listing: l, setPage, saved, toggleSave, current
                   Unlock to contact this landlord
                 </div>
                 <div style={{ fontSize: 13, color: '#888', lineHeight: 1.7, marginBottom: 16 }}>
-                  Pay KSh 500 once — contact any landlord for 12 months.
+                  Pay KSh 500 once — contact any landlord for 30 days (expires early when you find a house).
                 </div>
                 <div style={{ background: '#F5F0E8', borderRadius: 10, padding: '12px 14px', marginBottom: 16, textAlign: 'left' }}>
                   {[['💬','Contact unlimited landlords'],['📞','See & call landlord number'],['💬','WhatsApp landlord directly'],['📍','View full property address'],['🏆','Verified tenant badge']].map(([ic, txt]) => (
@@ -155,7 +155,7 @@ export default function Detail({ listing: l, setPage, saved, toggleSave, current
                   ))}
                 </div>
                 <div style={{ background: '#EAF3DE', border: '1px solid #97C459', borderRadius: 8, padding: '10px', marginBottom: 16, fontSize: 13, fontWeight: 700, color: '#1A5C35' }}>
-                  KSh 500 · One time · 12 months access
+                  KSh 500 · 30 days access (or until house found)
                 </div>
                 <button style={{ ...btn.primary, width: '100%', padding: 14, fontSize: 15, borderRadius: 12 }} onClick={() => setShowPayment(true)}>
                   Pay KSh 500 & Contact →
@@ -179,6 +179,18 @@ export default function Detail({ listing: l, setPage, saved, toggleSave, current
                   <span>
                     <strong>Verified Tenant</strong> · Active until {new Date(currentUser.subscriptionExpiry).toLocaleDateString('en-KE', { day: 'numeric', month: 'short', year: 'numeric' })}
                   </span>
+                </div>
+
+                {/* Safety warning */}
+                <div style={{
+                  background: '#FDF2F2', border: '1.5px solid #F8B4B4',
+                  borderRadius: 10, padding: '12px 14px', marginBottom: 18,
+                  fontSize: 12.5, color: '#9B1C1C', lineHeight: 1.5,
+                }}>
+                  <div style={{ fontWeight: 700, marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span>⚠️</span> Safety First — On-Site Viewings Only
+                  </div>
+                  You must meet the landlord physically at the property. <strong>Never pay any deposit, booking fee, or rent online beforehand.</strong> Anything else is a scam.
                 </div>
 
                 {/* ── Contact action buttons ── */}

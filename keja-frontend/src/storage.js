@@ -55,15 +55,31 @@ export function clearSession() {
 // ── Tenant subscription ───────────────────────────────────────────────────────
 export function activateTenantSubscription(email) {
   const expiry  = new Date()
-  expiry.setFullYear(expiry.getFullYear() + 1)
-  const updates = { subscriptionPaid: true, subscriptionExpiry: expiry.toISOString() }
+  expiry.setDate(expiry.getDate() + 30) // 1 month access
+  const updates = { subscriptionPaid: true, subscriptionExpiry: expiry.toISOString(), houseFound: false }
   const updated = updateUser(email, updates)
   if (updated) saveSession(updated)
   return updated
 }
 
+export function markHouseAsFound(email) {
+  const updates = { subscriptionPaid: false, houseFound: true }
+  const updated = updateUser(email, updates)
+  if (updated) saveSession(updated)
+  return updated
+}
+
+export function resetTenantSearch(email) {
+  const updates = { subscriptionPaid: false, subscriptionExpiry: null, houseFound: false }
+  const updated = updateUser(email, updates)
+  if (updated) saveSession(updated)
+  return updated
+}
+
+
 export function isTenantSubscribed(user) {
   if (!user || user.role !== 'tenant') return false
+  if (user.houseFound)                 return false
   if (!user.subscriptionPaid)          return false
   return new Date(user.subscriptionExpiry) > new Date()
 }

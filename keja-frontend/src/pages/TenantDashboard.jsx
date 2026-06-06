@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { C, font, btn } from '../styles'
-import { isTenantSubscribed } from '../storage'
+import { isTenantSubscribed, markHouseAsFound, resetTenantSearch, activateTenantSubscription } from '../storage'
 import PaymentModal from '../components/PaymentModal'
 import PropertyCard from '../components/PropertyCard'
 
 const PERKS = [
-  { icon: '💬', title: 'Contact any landlord directly', desc: 'Message or call landlords without limits for 12 months.' },
+  { icon: '💬', title: 'Contact any landlord directly', desc: 'Message or call landlords without limits for 30 days.' },
   { icon: '📍', title: 'View full property address', desc: 'See the exact location and street address of every listing.' },
   { icon: '🔔', title: 'New listing alerts', desc: 'Be the first to know when a new property is listed in your area.' },
   { icon: '❤️', title: 'Save unlimited properties', desc: 'Bookmark as many listings as you want and compare them side by side.' },
@@ -38,6 +38,18 @@ export default function TenantDashboard({ currentUser, setCurrentUser, setPage, 
     }, 1200)
   }
 
+  const handleHouseFound = () => {
+    if (window.confirm("Congratulations! Are you sure you want to mark your house as found? This will immediately expire your active search access.")) {
+      const updated = markHouseAsFound(currentUser.email)
+      setCurrentUser(updated)
+    }
+  }
+
+  const handleResetSearch = () => {
+    const updated = resetTenantSearch(currentUser.email)
+    setCurrentUser(updated)
+  }
+
   const expiryDate = currentUser?.subscriptionExpiry
     ? new Date(currentUser.subscriptionExpiry).toLocaleDateString('en-KE', { day: 'numeric', month: 'long', year: 'numeric' })
     : null
@@ -62,7 +74,29 @@ export default function TenantDashboard({ currentUser, setCurrentUser, setPage, 
         </div>
 
         {/* ── Subscription card ── */}
-        {!subscribed ? (
+        {currentUser?.houseFound ? (
+          <div style={{
+            background: '#EAF3DE', border: '1.5px solid #97C459',
+            borderRadius: 16, padding: '24px 28px', marginBottom: 36,
+            display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap',
+          }}>
+            <div style={{ fontSize: 40 }}>🎉</div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontFamily: font.display, fontSize: 18, fontWeight: 700, color: '#1A5C35', marginBottom: 4 }}>
+                Congrats on finding your new home! 🏡
+              </div>
+              <div style={{ fontSize: 14, color: '#3B7A50' }}>
+                Your KSh 500 active search has expired because you found a house. Good luck with your move!
+              </div>
+            </div>
+            <button
+              style={{ ...btn.primary, padding: '10px 20px', fontSize: 13, borderRadius: 10 }}
+              onClick={handleResetSearch}
+            >
+              🔄 Start a New Search
+            </button>
+          </div>
+        ) : !subscribed ? (
           <div style={{
             background: 'linear-gradient(135deg, #1A1A1A 0%, #2D3A1E 100%)',
             borderRadius: 20, padding: '36px 36px', marginBottom: 36,
@@ -72,13 +106,13 @@ export default function TenantDashboard({ currentUser, setCurrentUser, setPage, 
             <div>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(196,82,42,0.3)', border: '1px solid rgba(196,82,42,0.5)', borderRadius: 20, padding: '4px 14px', marginBottom: 14 }}>
                 <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#F4A340', display: 'inline-block' }} />
-                <span style={{ fontSize: 12, color: '#F4A340', fontWeight: 700 }}>INACTIVE — KSh 500 / year</span>
+                <span style={{ fontSize: 12, color: '#F4A340', fontWeight: 700 }}>INACTIVE — KSh 500 / month</span>
               </div>
               <h2 style={{ fontFamily: font.display, fontSize: 22, color: '#FFFDF9', fontWeight: 700, marginBottom: 10 }}>
                 Unlock Full Access
               </h2>
               <p style={{ fontSize: 14, color: 'rgba(255,253,249,0.65)', lineHeight: 1.8, maxWidth: 480 }}>
-                Pay KSh 500 once and contact unlimited landlords for 12 months. No hidden charges. Cancel anytime.
+                Pay KSh 500 once and contact landlords for 30 days (expires early if you find a house). No hidden charges.
               </p>
             </div>
             <button
@@ -104,12 +138,37 @@ export default function TenantDashboard({ currentUser, setCurrentUser, setPage, 
                 You can contact unlimited landlords · Expires <strong>{expiryDate}</strong>
               </div>
             </div>
-            <div style={{ textAlign: 'right' }}>
-              <div style={{ fontFamily: font.display, fontSize: 22, fontWeight: 700, color: '#1A5C35' }}>KSh 500</div>
-              <div style={{ fontSize: 12, color: '#3B7A50' }}>paid · 12 months</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 18, flexWrap: 'wrap' }}>
+              <button
+                style={{
+                  background: C.terracotta, color: '#fff', border: 'none',
+                  borderRadius: 10, padding: '10px 18px', fontSize: 13,
+                  fontWeight: 700, cursor: 'pointer', fontFamily: font.body,
+                  boxShadow: '0 2px 8px rgba(196,82,42,0.2)',
+                }}
+                onClick={handleHouseFound}
+              >
+                🎉 I Found a House!
+              </button>
+              <div style={{ textAlign: 'right' }}>
+                <div style={{ fontFamily: font.display, fontSize: 22, fontWeight: 700, color: '#1A5C35' }}>KSh 500</div>
+                <div style={{ fontSize: 12, color: '#3B7A50' }}>paid · 30 days</div>
+              </div>
             </div>
           </div>
         )}
+
+        {/* Scam Warning Alert */}
+        <div style={{
+          background: '#FDF2F2', border: '1.5px solid #F8B4B4',
+          borderRadius: 14, padding: '16px 20px', marginBottom: 28,
+          fontSize: 13, color: '#9B1C1C', lineHeight: 1.5,
+        }}>
+          <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span>🚨</span> Scam Prevention Rule
+          </div>
+          Every transaction must happen on-site. <strong>Always meet the landlord in person at the property before paying rent or deposits.</strong> Do not pay online booking fees or "reservation deposits" to any landlord beforehand. Anyone requesting this is a scammer.
+        </div>
 
         {/* ── Stats ── */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14, marginBottom: 36 }}>
@@ -132,7 +191,7 @@ export default function TenantDashboard({ currentUser, setCurrentUser, setPage, 
         {!subscribed && (
           <div style={{ marginBottom: 48 }}>
             <h2 style={{ fontFamily: font.display, fontSize: 20, fontWeight: 700, marginBottom: 20 }}>
-              What you get for KSh 500 / year
+              What you get for KSh 500 / month
             </h2>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 14 }}>
               {PERKS.map(p => (
@@ -257,10 +316,10 @@ export default function TenantDashboard({ currentUser, setCurrentUser, setPage, 
             <div style={{ fontSize: 60, marginBottom: 16 }}>🎉</div>
             <h2 style={{ fontFamily: font.display, fontSize: 24, fontWeight: 700, marginBottom: 10 }}>You're all set!</h2>
             <p style={{ fontSize: 14, color: C.textSub, lineHeight: 1.8, marginBottom: 24 }}>
-              Your account is now active for 12 months. Contact any landlord directly, view full addresses, and save unlimited properties.
+              Your account is now active for 30 days (expires early if you find a house). Contact any landlord directly, view full addresses, and save unlimited properties.
             </p>
             <div style={{ background: '#EAF3DE', border: '1px solid #97C459', borderRadius: 12, padding: '14px 18px', marginBottom: 24, fontSize: 13, color: '#27500A', lineHeight: 1.8, textAlign: 'left' }}>
-              ✅ KSh 500 paid — 12 months access<br />
+              ✅ KSh 500 paid — 30 days access<br />
               💬 Contact unlimited landlords<br />
               🏆 Verified tenant badge active
             </div>

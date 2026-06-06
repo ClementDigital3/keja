@@ -267,7 +267,7 @@ export default function Signup({ setPage, setCurrentUser }) {
                 {role === 'landlord' ? (
                   <>✅ Account registered & payment verified<br />🏢 List unlimited properties<br />📋 Valid for 12 months</>
                 ) : (
-                  <>✅ Free account created<br />🏠 Browse all verified listings<br />💵 Pay KSh 500 in person after viewing</>
+                  <>✅ Free account created<br />🏠 Browse all verified listings<br />💳 Pay KSh 500 to unlock contact details</>
                 )}
               </div>
               <button

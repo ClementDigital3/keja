@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { C, font, btn } from '../styles'
 
 const PROPERTY_TYPES = ['Apartment', 'Bedsitter', 'Studio', 'Townhouse', 'Maisonette', 'Villa', 'Bungalow']
-const LOCATIONS = ['Westlands', 'Kilimani', 'Karen', 'Kasarani', 'Muthaiga', 'Lavington', 'Ruaraka', 'Ruaka', 'Mlolongo', 'Ngong Road', 'South B', 'South C', 'Embakasi', 'Donholm', 'Umoja', 'Githurai', 'Thika Road', 'Kikuyu', 'Rongai', 'Other']
+const LOCATIONS = ['Westlands','Kilimani','Karen','Kasarani','Muthaiga','Lavington','Ruaraka','Ruaka','Mlolongo','Nyali','Bamburi','Tudor','Milimani Mombasa','Milimani Kisumu','Kondele','Mamboleo','Section 58 Nakuru','Milimani Nakuru','CBD Nakuru','Elgon View','Langas','Makongeni Thika','CBD Thika','Ruringunyu Nyeri','CBD Nyeri','Kisii Town','Suneka','Machakos Town','Athi River','Meru Town','Makutano','Malindi Town','Naivasha Town','Kakamega Town','Kericho Town','Other']
 const AMENITY_OPTIONS = ['WiFi', 'Parking', 'Security', 'Gym', 'Pool', 'Garden', 'Generator', 'Borehole', 'CCTV', 'Water', 'DSQ', 'Lift/Elevator', 'Balcony', 'Laundry']
 
 const STEPS = ['Property Info', 'Location & Price', 'Amenities & Photos', 'Review & Submit']
