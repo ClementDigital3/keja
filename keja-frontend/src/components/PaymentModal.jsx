@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { C, font, btn } from '../styles'
-import { activateTenantSubscription } from '../storage'
+import { api } from '../api'
 
 export default function PaymentModal({ currentUser, setCurrentUser, onClose, onSuccess }) {
   const [mpesaCode, setMpesaCode] = useState('')
@@ -9,7 +9,7 @@ export default function PaymentModal({ currentUser, setCurrentUser, onClose, onS
   const [error, setError]         = useState('')
   const [done, setDone]           = useState(false)
 
-  const handleActivate = () => {
+  const handleActivate = async () => {
     setError('')
     if (!mpesaCode.trim())
       return setError('Enter your M-Pesa confirmation code.')
@@ -17,13 +17,20 @@ export default function PaymentModal({ currentUser, setCurrentUser, onClose, onS
       return setError('Invalid M-Pesa code — should look like RG7KL1MXYZ.')
 
     setLoading(true)
-    setTimeout(() => {
-      const updated = activateTenantSubscription(currentUser.email)
-      setCurrentUser(updated)
+    try {
+      const res = await api.verifyMpesa(mpesaCode.trim())
       setLoading(false)
-      setDone(true)
-      if (onSuccess) setTimeout(onSuccess, 1800)
-    }, 1200)
+      if (res.success && res.user) {
+        setCurrentUser(res.user)
+        setDone(true)
+        if (onSuccess) setTimeout(onSuccess, 1800)
+      } else {
+        setError('Verification failed. Invalid code.')
+      }
+    } catch (err) {
+      setLoading(false)
+      setError(err.message || 'Error verifying payment. Please try again.')
+    }
   }
 
   const inp = {

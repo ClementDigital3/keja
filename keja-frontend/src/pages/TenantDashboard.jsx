@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { C, font, btn } from '../styles'
-import { isTenantSubscribed, markHouseAsFound, resetTenantSearch, activateTenantSubscription } from '../storage'
+import { isTenantSubscribed } from '../storage'
+import { api } from '../api'
 import PaymentModal from '../components/PaymentModal'
 import PropertyCard from '../components/PropertyCard'
 
@@ -24,30 +25,49 @@ export default function TenantDashboard({ currentUser, setCurrentUser, setPage, 
   const subscribed = isTenantSubscribed(currentUser)
   const savedListings = listings.filter(l => savedIds.includes(l.id))
 
-  const handleActivate = () => {
+  const handleActivate = async () => {
     setError('')
     if (!mpesaCode.trim()) { setError('Enter your M-Pesa confirmation code.'); return }
     if (!/^[A-Z0-9]{8,12}$/i.test(mpesaCode.trim())) { setError('Invalid M-Pesa code (e.g. RG7KL1MXYZ).'); return }
 
     setLoading(true)
-    setTimeout(() => {
-      const updated = activateTenantSubscription(currentUser.email)
-      setCurrentUser(updated)
+    try {
+      const res = await api.verifyMpesa(mpesaCode.trim())
       setLoading(false)
-      setPaySuccess(true)
-    }, 1200)
-  }
-
-  const handleHouseFound = () => {
-    if (window.confirm("Congratulations! Are you sure you want to mark your house as found? This will immediately expire your active search access.")) {
-      const updated = markHouseAsFound(currentUser.email)
-      setCurrentUser(updated)
+      if (res.success && res.user) {
+        setCurrentUser(res.user)
+        setPaySuccess(true)
+      } else {
+        setError('Verification failed. Invalid code.')
+      }
+    } catch (err) {
+      setLoading(false)
+      setError(err.message || 'Error verifying payment. Please try again.')
     }
   }
 
-  const handleResetSearch = () => {
-    const updated = resetTenantSearch(currentUser.email)
-    setCurrentUser(updated)
+  const handleHouseFound = async () => {
+    if (window.confirm("Congratulations! Are you sure you want to mark your house as found? This will immediately expire your active search access.")) {
+      try {
+        const res = await api.markHouseFound()
+        if (res.success && res.user) {
+          setCurrentUser(res.user)
+        }
+      } catch (err) {
+        alert(err.message || 'Failed to update status')
+      }
+    }
+  }
+
+  const handleResetSearch = async () => {
+    try {
+      const res = await api.resetSearch()
+      if (res.success && res.user) {
+        setCurrentUser(res.user)
+      }
+    } catch (err) {
+      alert(err.message || 'Failed to reset search')
+    }
   }
 
   const expiryDate = currentUser?.subscriptionExpiry

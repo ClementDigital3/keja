@@ -32,6 +32,10 @@ const propertySchema = new mongoose.Schema({
     type: String,
     required: [true, 'Please specify the location/neighbourhood'],
   },
+  city: {
+    type: String,
+    required: [true, 'Please specify the city/town'],
+  },
   address: {
     type: String,
     required: [true, 'Please specify the physical address or estate'],
@@ -59,6 +63,10 @@ const propertySchema = new mongoose.Schema({
   available: {
     type: Boolean,
     default: true,
+  },
+  amenities: {
+    type: [String],
+    default: [],
   },
   imgUrl: {
     type: String,

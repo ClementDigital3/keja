@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { C, font, btn } from '../styles'
-import { findUser, saveSession } from '../storage'
+import { saveSession } from '../storage'
+import { api } from '../api'
 
 export default function Login({ setPage, setCurrentUser }) {
   const [role, setRole]         = useState('tenant')
@@ -10,26 +11,25 @@ export default function Login({ setPage, setCurrentUser }) {
   const [error, setError]       = useState('')
   const [loading, setLoading]   = useState(false)
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     setError('')
     if (!email || !password)    { setError('Please fill in all fields.'); return }
     if (!email.includes('@'))   { setError('Enter a valid email address.'); return }
     if (password.length < 6)    { setError('Password must be at least 6 characters.'); return }
 
     setLoading(true)
-    setTimeout(() => {
-      const result = findUser(email, password, role)
+    try {
+      const result = await api.login(email, password, role)
       setLoading(false)
 
-      if (result.error) {
-        setError(result.error)
-        return
-      }
-
+      localStorage.setItem('keja_token', result.token)
       saveSession(result.user)
       setCurrentUser(result.user)
       setPage(role === 'landlord' ? 'dashboard' : 'tenant-dashboard')
-    }, 800)
+    } catch (err) {
+      setLoading(false)
+      setError(err.message || 'Login failed. Please check your credentials.')
+    }
   }
 
   const inp = {

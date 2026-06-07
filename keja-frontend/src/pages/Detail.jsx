@@ -25,8 +25,8 @@ export default function Detail({ listing: l, setPage, saved, toggleSave, current
   if (!l) return null
 
   const subscribed    = isTenantSubscribed(currentUser)
-  const landlordPhone = l.contactPhone || null
-  const landlordName  = l.landlord || l.contactName || 'Landlord'
+  const landlordPhone = typeof l.landlord === 'object' && l.landlord ? l.landlord.phone : (l.contactPhone || null)
+  const landlordName  = typeof l.landlord === 'object' && l.landlord ? l.landlord.name : (l.contactName || 'Landlord')
   const intlPhone     = toIntl(landlordPhone)
 
   const copyPhone = () => {

@@ -4,7 +4,14 @@ import { TAG_COLORS } from '../data'
 export default function LandlordDashboard({ setPage, currentUser, listings = [], onDeleteListing }) {
 
   // Only show this landlord's listings
-  const myListings = listings.filter(l => l.landlord === currentUser?.name)
+  const myListings = listings.filter(l => {
+    if (!l.landlord) return false;
+    const lId = typeof l.landlord === 'object' ? (l.landlord._id || l.landlord.id) : l.landlord;
+    const currentId = currentUser?.id || currentUser?._id;
+    if (lId && currentId && lId.toString() === currentId.toString()) return true;
+    const lName = typeof l.landlord === 'object' ? l.landlord.name : l.landlord;
+    return lName === currentUser?.name;
+  })
 
   const totalListings  = myListings.length
   const available      = myListings.filter(l => l.available).length

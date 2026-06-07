@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { C, font, btn } from '../styles'
+import { api } from '../api'
 
 const PROPERTY_TYPES = ['Apartment', 'Bedsitter', 'Studio', 'Townhouse', 'Maisonette', 'Villa', 'Bungalow']
 const LOCATIONS = ['Westlands','Kilimani','Karen','Kasarani','Muthaiga','Lavington','Ruaraka','Ruaka','Mlolongo','Nyali','Bamburi','Tudor','Milimani Mombasa','Milimani Kisumu','Kondele','Mamboleo','Section 58 Nakuru','Milimani Nakuru','CBD Nakuru','Elgon View','Langas','Makongeni Thika','CBD Thika','Ruringunyu Nyeri','CBD Nyeri','Kisii Town','Suneka','Machakos Town','Athi River','Meru Town','Makutano','Malindi Town','Naivasha Town','Kakamega Town','Kericho Town','Other']
@@ -74,32 +75,63 @@ export default function ListingForm({ setPage, currentUser, onAddListing }) {
 
   const back = () => { setError(''); setStep(s => s - 1) }
 
-  const handleSubmit = () => {
+  const deriveCity = (loc) => {
+    if (!loc) return 'Nairobi';
+    const l = loc.toLowerCase();
+    if (['westlands', 'kilimani', 'karen', 'kasarani', 'muthaiga', 'lavington', 'ruaraka', 'ruaka', 'mlolongo'].some(x => l.includes(x))) return 'Nairobi';
+    if (['nyali', 'bamburi', 'tudor'].some(x => l.includes(x))) return 'Mombasa';
+    if (['kisumu', 'kondele', 'mamboleo'].some(x => l.includes(x))) return 'Kisumu';
+    if (['nakuru', 'section 58'].some(x => l.includes(x))) return 'Nakuru';
+    if (['elgon', 'langas'].some(x => l.includes(x))) return 'Eldoret';
+    if (['thika', 'makongeni'].some(x => l.includes(x))) return 'Thika';
+    if (['nyeri', 'ruringu'].some(x => l.includes(x))) return 'Nyeri';
+    if (['kisii', 'suneka'].some(x => l.includes(x))) return 'Kisii';
+    if (['machakos', 'athi river'].some(x => l.includes(x))) return 'Machakos';
+    if (['meru', 'makutano'].some(x => l.includes(x))) return 'Meru';
+    if (l.includes('malindi')) return 'Malindi';
+    if (l.includes('naivasha')) return 'Naivasha';
+    if (l.includes('kakamega')) return 'Kakamega';
+    if (l.includes('kericho')) return 'Kericho';
+    return 'Nairobi';
+  }
+
+  const handleSubmit = async () => {
     setLoading(true)
-    setTimeout(() => {
-      const newListing = {
-        id: Date.now(),
-        title: form.title,
-        location: `${form.location}, Nairobi`,
-        price: parseInt(form.price),
-        beds: parseInt(form.beds),
-        baths: parseInt(form.baths),
-        sqft: parseInt(form.sqft) || 0,
-        type: form.type,
-        tag: 'New',
-        img: form.imgUrl || 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=700&q=80',
-        amenities: form.amenities,
-        available: form.available,
-        rating: 0,
-        reviews: 0,
-        desc: form.desc,
-        landlord: currentUser?.name || 'Landlord',
-        postedAt: new Date().toLocaleDateString('en-KE'),
-      }
-      onAddListing(newListing)
+    setError('')
+    const city = deriveCity(form.location);
+    const newListing = {
+      title: form.title,
+      type: form.type,
+      beds: parseInt(form.beds),
+      baths: parseInt(form.baths),
+      sqft: parseInt(form.sqft) || 0,
+      desc: form.desc,
+      location: form.location,
+      city,
+      address: form.address,
+      price: parseInt(form.price),
+      deposit: parseInt(form.deposit) || 1,
+      minLease: parseInt(form.minLease) || 6,
+      amenities: form.amenities,
+      pets: form.pets,
+      img: form.imgUrl || 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=700&q=80',
+      contactPhone: form.contactPhone,
+      contactName: form.contactName,
+    }
+
+    try {
+      const result = await api.createListing(newListing)
       setLoading(false)
-      setSubmitted(true)
-    }, 1400)
+      if (result.success && result.property) {
+        onAddListing(result.property)
+        setSubmitted(true)
+      } else {
+        setError('Failed to create listing.')
+      }
+    } catch (err) {
+      setLoading(false)
+      setError(err.message || 'Error submitting listing. Please try again.')
+    }
   }
 
   // ── Shared input style ───────────────────────────────────────────

@@ -12,6 +12,11 @@ const getProperties = async (req, res) => {
       query.location = { $regex: req.query.location, $options: 'i' };
     }
 
+    // Filter by city
+    if (req.query.city) {
+      query.city = { $regex: req.query.city, $options: 'i' };
+    }
+
     // Filter by property type
     if (req.query.type) {
       query.type = req.query.type;
@@ -75,19 +80,20 @@ const createProperty = async (req, res) => {
   try {
     const {
       title, type, beds, baths, sqft, desc,
-      location, address, price, deposit, minLease,
-      utilities, pets, imgUrl, contactPhone, contactName
+      location, city, address, price, deposit, minLease,
+      utilities, pets, imgUrl, contactPhone, contactName, amenities
     } = req.body;
 
-    if (!title || !type || !beds || !baths || !desc || !location || !address || !price || !contactPhone || !contactName) {
+    if (!title || !type || !beds || !baths || !desc || !location || !city || !address || !price || !contactPhone || !contactName) {
       return res.status(400).json({ success: false, error: 'Please enter all required fields' });
     }
 
     const property = await Property.create({
       title, type, beds: parseInt(beds), baths: parseInt(baths), sqft: parseInt(sqft) || 0,
-      desc, location, address, price: parseInt(price), deposit: parseInt(deposit) || 1,
+      desc, location, city, address, price: parseInt(price), deposit: parseInt(deposit) || 1,
       minLease: parseInt(minLease) || 6, utilities, pets: pets === true || pets === 'true',
       imgUrl, contactPhone, contactName, landlord: req.user.id,
+      amenities: amenities || [],
       verified: false, // Default unverified until documents uploaded
     });
 

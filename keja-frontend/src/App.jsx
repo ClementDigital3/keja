@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Navbar from './components/Navbar'
 import Home from './pages/Home'
 import Listings from './pages/Listings'
@@ -10,8 +10,8 @@ import ListingForm from './pages/ListingForm'
 import LandlordDashboard from './pages/LandlordDashboard'
 import TenantDashboard from './pages/TenantDashboard'
 import { C, font } from './styles'
-import { LISTINGS } from './data'
-import { getSession, clearSession, getSavedListings, saveListings } from './storage'
+import { getSession, clearSession, saveSession } from './storage'
+import { api } from './api'
 
 export default function App() {
   const [page, setPage]                       = useState(() => {
@@ -24,35 +24,69 @@ export default function App() {
   const [searchTerm, setSearchTerm]           = useState('')
   const [selectedCity, setSelectedCity]       = useState('All Cities')
   const [currentUser, setCurrentUser]         = useState(() => getSession())
-  const [allListings, setAllListings]         = useState(() => {
-    const stored = getSavedListings()
-    if (!stored.length) return LISTINGS
-    const landlordAdded = stored.filter(l => !LISTINGS.find(b => b.id === l.id))
-    return [...LISTINGS, ...landlordAdded]
-  })
+  const [allListings, setAllListings]         = useState([])
+
+  useEffect(() => {
+    const initApp = async () => {
+      const token = localStorage.getItem('keja_token')
+      if (token) {
+        try {
+          const res = await api.getMe()
+          if (res.success && res.user) {
+            saveSession(res.user)
+            setCurrentUser(res.user)
+          } else {
+            handleLogout()
+          }
+        } catch (e) {
+          handleLogout()
+        }
+      }
+
+      try {
+        const res = await api.getListings()
+        if (res.success && Array.isArray(res.properties)) {
+          setAllListings(res.properties)
+        }
+      } catch (e) {
+        console.error('Error fetching listings:', e)
+      }
+    }
+
+    initApp()
+  }, [])
 
   const toggleSave = (id) =>
     setSavedIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id])
 
-  const handleLogout = () => { clearSession(); setCurrentUser(null); setPage('home') }
+  const handleLogout = () => {
+    clearSession()
+    localStorage.removeItem('keja_token')
+    setCurrentUser(null)
+    setPage('home')
+  }
 
   const handleAddListing = (newListing) => {
-    setAllListings(prev => {
-      const updated = [newListing, ...prev]
-      saveListings(updated)
-      return updated
-    })
+    setAllListings(prev => [newListing, ...prev])
   }
 
-  const handleDeleteListing = (id) => {
-    setAllListings(prev => {
-      const updated = prev.filter(l => l.id !== id)
-      saveListings(updated)
-      return updated
-    })
+  const handleDeleteListing = async (id) => {
+    try {
+      const result = await api.deleteListing(id)
+      if (result.success) {
+        setAllListings(prev => prev.filter(l => l.id !== id))
+      }
+    } catch (e) {
+      alert(e.message || 'Failed to delete listing')
+    }
   }
 
-  const handleSetCurrentUser = (u) => { setCurrentUser(u) }
+  const handleSetCurrentUser = (u) => {
+    if (u) {
+      saveSession(u)
+      setCurrentUser(u)
+    }
+  }
 
   return (
     <div style={{ fontFamily: font.body, background: C.cream, minHeight: '100vh', color: C.dark }}>

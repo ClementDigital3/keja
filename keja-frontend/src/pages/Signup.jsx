@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { C, font, btn } from '../styles'
-import { saveUser, saveSession } from '../storage'
+import { saveSession } from '../storage'
+import { api } from '../api'
 
 const STEPS_LANDLORD = ['Choose Role', 'Your Details', 'M-Pesa Payment', 'Done!']
 const STEPS_TENANT   = ['Choose Role', 'Your Details', 'Done!']
@@ -39,32 +40,30 @@ export default function Signup({ setPage, setCurrentUser }) {
     return null
   }
 
-  const createAccount = () => {
+  const createAccount = async () => {
     setLoading(true)
     const user = {
       firstName: form.firstName,
       lastName: form.lastName,
-      name: `${form.firstName} ${form.lastName}`,
       email: form.email,
       phone: form.phone,
       idNumber: form.idNumber || null,
       password: form.password,
-      role,
-      registeredAt: new Date().toISOString(),
+      role
     }
 
-    setTimeout(() => {
-      const result = saveUser(user)
+    try {
+      const result = await api.signup(user)
       setLoading(false)
 
-      if (result.error) { setError(result.error); return }
-
-      // Save session (without password)
-      const { password: _, ...sessionUser } = user
-      saveSession(sessionUser)
-      setCurrentUser(sessionUser)
-      setStep(role === 'landlord' ? 3 : 3)
-    }, 1000)
+      localStorage.setItem('keja_token', result.token)
+      saveSession(result.user)
+      setCurrentUser(result.user)
+      setStep(3)
+    } catch (err) {
+      setLoading(false)
+      setError(err.message || 'Registration failed. Please check your inputs.')
+    }
   }
 
   const next = () => {
